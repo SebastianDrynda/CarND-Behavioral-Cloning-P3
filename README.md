@@ -49,9 +49,9 @@ After that, I decided to try the [NVidia Autonomous Car Group model](https://dev
 
 #### 2. Attempts to reduce overfitting in the model
 
-I decided not to modify the model by applying regularization techniques like [Dropout](https://en.wikipedia.org/wiki/Dropout_(neural_networks)) or [Max pooling](https://en.wikipedia.org/wiki/Convolutional_neural_network#Max_pooling_shape). Instead, I decided to keep the training epochs low (not more than 10 epochs). Furthermore the model was trained and validated on different data sets to ensure that the model was not overfitting.
+To reduce overfitting I decided applying the regularization techniques  [Dropout](https://en.wikipedia.org/wiki/Dropout_(neural_networks)). Dropout is applied between the dense layers with a dropout rate of 20%.
+Furthermore, I decided to keep the training epochs low (not more than 10 epochs) and to train the model on different data sets to ensure that the model was not overfitting.
 In addition to that, I split my sample data into training and validation data. Using 80% as training and 20% as validation.
-
 
 #### 3. Model parameter tuning
 
@@ -69,8 +69,7 @@ For details about how I created the training data, see the next section.
 
 My first approach was to use the LeNet](http://yann.lecun.com/exdb/lenet/) model with 3 and finally with 10 epochs and the training data provided by Udacity. On the first track, the car went straight to the lake. I needed to do some preprocessing [model.py line 113-120](model.py#L113-L120). A `Lambda` layer was introduced to normalize the input images to zero means. Furthermore a  `Cropping` layer was used. The results improved, but was not perfect even with 10 epochs.
 
-The second step was to use the [NVidia Autonomous Car Group model](https://devblogs.nvidia.com/parallelforall/deep-learning-self-driving-cars/) The only modification was to add a new layer at the end to have a single output as it was required. This time the car did its first complete track, but there was a place in the track where it passes over the "dashed" line. I increased the epochs from 5 to 10 and collect more data.  Augmented the data by adding the same image flipped with a negative angle([model.py line 104](model.py#L104)). In addition to that, the left and right camera images where introduced with a correction factor 0.2 on the angle to help the car go back to the lane([model.py line 60 - 74](model.py#L60-L74)). At the end of the process with using 10 epochs, the vehicle was able to drive autonomously around the track 1 and finally on track 2 without leaving the road.
-
+The second step was to use the [NVidia Autonomous Car Group model](https://devblogs.nvidia.com/parallelforall/deep-learning-self-driving-cars/). My modifications were to add a new layer at the end to have a single output as it was required and some dropout layers to avoid overfitting. This time the car did its first complete track, but there was a place in the track where it passes over the "dashed" line. I increased the epochs from 5 to 10 and collect more data.  Augmented the data by adding the same image flipped with a negative angle([model.py line 104](model.py#L104)). In addition to that, the left and right camera images where introduced with a correction factor 0.2 on the angle to help the car go back to the lane([model.py line 60 - 74](model.py#L60-L74)). At the end of the process with using 10 epochs, the vehicle was able to drive autonomously around the track 1 and finally on track 2 without leaving the road.
 
 #### 2. Final Model Architecture
 
@@ -81,7 +80,7 @@ Model architecture summary:
 ```
 Layer (type)                     Output Shape          Param #     Connected to
 ====================================================================================================
-lambda_1 (Lambda)                (None, 160, 320, 3)   0           lambda_input_2[0][0]
+lambda_1 (Lambda)                (None, 160, 320, 3)   0           lambda_input_1[0][0]
 ____________________________________________________________________________________________________
 cropping2d_1 (Cropping2D)        (None, 90, 320, 3)    0           lambda_1[0][0]
 ____________________________________________________________________________________________________
@@ -99,15 +98,22 @@ flatten_1 (Flatten)              (None, 8448)          0           convolution2d
 ____________________________________________________________________________________________________
 dense_1 (Dense)                  (None, 100)           844900      flatten_1[0][0]
 ____________________________________________________________________________________________________
-dense_2 (Dense)                  (None, 50)            5050        dense_1[0][0]
+dropout_1 (Dropout)              (None, 100)           0           dense_1[0][0]
 ____________________________________________________________________________________________________
-dense_3 (Dense)                  (None, 10)            510         dense_2[0][0]
+dense_2 (Dense)                  (None, 50)            5050        dropout_1[0][0]
 ____________________________________________________________________________________________________
-dense_4 (Dense)                  (None, 1)             11          dense_3[0][0]
+dropout_2 (Dropout)              (None, 50)            0           dense_2[0][0]
+____________________________________________________________________________________________________
+dense_3 (Dense)                  (None, 10)            510         dropout_2[0][0]
+____________________________________________________________________________________________________
+dropout_3 (Dropout)              (None, 10)            0           dense_3[0][0]
+____________________________________________________________________________________________________
+dense_4 (Dense)                  (None, 1)             11          dropout_3[0][0]
 ====================================================================================================
 Total params: 981,819
 Trainable params: 981,819
 Non-trainable params: 0
+
 ```
 
 #### 3. Creation of the Training Set & Training Process
@@ -120,7 +126,7 @@ Track 1
 
 Track 2
 - Two laps driving forward. That was not enough data to stay on the whole track (data/04_track2_forward)
-- Four additionally laps driving forward (data/05_track2_forward). Four laps on track 2, was challenging for me :)
+- Four additionally laps driving forward (data/05_track2_forward). Four laps on track 2, was quite challenging for me :)
 
 All these data was used for training the model with 10 epochs. The data was shuffled randomly. The following picture shows the training:
 

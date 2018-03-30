@@ -8,7 +8,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 
 from keras.models import Sequential, Model
-from keras.layers import Flatten, Dense, Lambda, Convolution2D, Cropping2D
+from keras.layers import Flatten, Dense, Lambda, Convolution2D, Cropping2D, Dropout
 from keras.layers.pooling import MaxPooling2D
 
 
@@ -148,15 +148,18 @@ def nvidia_model():
     model.add(Convolution2D(64,3,3, activation='relu'))
     model.add(Flatten())
     model.add(Dense(100))
+    model.add(Dropout(0.2))
     model.add(Dense(50))
+    model.add(Dropout(0.2))
     model.add(Dense(10))
+    model.add(Dropout(0.2))
     model.add(Dense(1))
     return model
 
 
 # Reading images locations
 data_paths = ['data/01_udacity', 'data/02_track1_forward', 'data/03_track1_backward', 'data/04_track2_forward', 'data/05_track2_forward']
-center_img_paths, left_img_paths, right_img_paths, measurements = get_data(data_paths, test_size=0)
+center_img_paths, left_img_paths, right_img_paths, measurements = get_data(data_paths, test_size=10)
 
 # Combine images and correct steering data by factor 0.2
 correction_factor = 0.2
@@ -166,7 +169,7 @@ print('Total Images: {}'.format(len(img_paths)))
 
 # Splitting samples (80% for training samples and 20% for validation samples)
 samples = list(zip(img_paths, measurements))
-train_samples, validation_samples = train_test_split(samples, test_size=0.2)
+train_samples, validation_samples = train_test_split(samples, test_size=0)
 
 print('Training samples: {}'.format(len(train_samples)))
 print('Validation samples: {}'.format(len(validation_samples)))
@@ -201,8 +204,6 @@ print(history_object.history['val_loss'])
 
 plt.plot(history_object.history['loss'])
 plt.plot(history_object.history['val_loss'])
-plt.plot(loss)
-plt.plot(valid_loss)
 plt.title('model mean squared error loss')
 plt.ylabel('mse loss')
 plt.xlabel('epoch')
