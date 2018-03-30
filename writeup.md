@@ -118,4 +118,4 @@ All these data was used for training the model with 10 epochs. The data was shuf
 
 ![Model Mean-square ](images/model_mse_lost.png)
 
-After this training, the car was driving down the road all the time on the [first](video.mp4) and [second](video_track2.mp4) track.
+After this training, the car was driving down the road all the time on the [first](video_track1.mp4) and [second](video_track2.mp4) track.
