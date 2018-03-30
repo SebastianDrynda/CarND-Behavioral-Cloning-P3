@@ -186,7 +186,7 @@ model = nvidia_model()
 model_name = 'model_nvidia'
 
 # Compiling and training the model
-epochs = 2
+epochs = 10
 verbose = 1
 model.compile(loss='mse', optimizer='adam')
 history_object = model.fit_generator(train_generator, samples_per_epoch= \
@@ -199,8 +199,8 @@ print(history_object.history['loss'])
 print('Validation Loss')
 print(history_object.history['val_loss'])
 
-from keras.utils import plot_model
-plot_model(model, to_file='model.png')
+# from keras.utils import plot_model
+# plot_model(model, to_file='model.png')
 
 plt.plot(history_object.history['loss'])
 plt.plot(history_object.history['val_loss'])
