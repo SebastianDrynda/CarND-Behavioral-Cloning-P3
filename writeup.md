@@ -112,7 +112,7 @@ Track 1
 
 Track 2
 - Two laps driving forward. That was not enough data to stay on the whole track (data/04_track2_forward)
-- Four additionally laps driving forward (data/05_track2_forward). To stay on track for four laps on track 2, was challenging for me :)
+- Four additionally laps driving forward (data/05_track2_forward). Four laps on track 2, was challenging for me :)
 
 All these data was used for training the model with 10 epochs. The data was shuffled randomly. The following picture shows the training:
 
