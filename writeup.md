@@ -44,8 +44,6 @@ After that, I decided to try the [NVidia Autonomous Car Group model](https://dev
 I decided not to modify the model by applying regularization techniques like [Dropout](https://en.wikipedia.org/wiki/Dropout_(neural_networks)) or [Max pooling](https://en.wikipedia.org/wiki/Convolutional_neural_network#Max_pooling_shape). Instead, I decided to keep the training epochs low (not more than 10 epochs). Furthermore the model was trained and validated on different data sets to ensure that the model was not overfitting.
 In addition to that, I split my sample data into training and validation data. Using 80% as training and 20% as validation.
 
-But for the second track 5 training epochs was not enough...
-For this project, you need to have as many training images as you can. I spent some time driving the car and getting used to the simulator(as I am not a gamer, it was challenging for me). There are two different tracks. The first one is the one the project is evaluated on and the second one is more challenging, but it could be used. All these training images need to be scp to your EC2 instance with GPU because the training on CPU is extremely slow. I tried to train locally, and the estimation time for a single epoch was more than 1000 seconds. On AWS, the same epoch was finish in 170 seconds. I decided to try a differ approach this time to fight overfitting, instead of modifying the NVIDIA team network architecture with dropout regularization or other techniques, I tried to keep my training epochs really small, only three of them. With that approach and data from both tracks going back and forward and using the car’s three cameras, the model was able to drive the car all the way on both tracks without problems. Here the mean squared error loss graph for the training:
 
 #### 3. Model parameter tuning
 
@@ -63,7 +61,7 @@ For details about how I created the training data, see the next section.
 
 My first approach was to use the LeNet](http://yann.lecun.com/exdb/lenet/) model with 3 and finally with 10 epochs and the training data provided by Udacity. On the first track, the car went straight to the lake. I needed to do some preprocessing [model.py line 113](model.py#L113). A `Lambda` layer was introduced to normalize the input images to zero means. Furthermore a  `Cropping` layer was used. The results improved, but was not perfect even with 10 epochs.
 
-The second step was to use a more powerfull model: [nVidia Autonomous Car Group](https://devblogs.nvidia.com/parallelforall/deep-learning-self-driving-cars/) The only modification was to add a new layer at the end to have a single output as it was required. This time the car did its first complete track, but there was a place in the track where it passes over the "dashed" line. I increased the epochs to 10 and collect more data.  Augmented the data by adding the same image flipped with a negative angle([model.py line 104](model.py#L104)). In addition to that, the left and right camera images where introduced with a correction factor 0.2 on the angle to help the car go back to the lane([model.py 60 - 74](model.py#L60-L74)). At the end of the process with using 10 epochs, the vehicle was able to drive autonomously around the track 1 and finally on track 2 without leaving the road.
+The second step was to use the [NVidia Autonomous Car Group mode](https://devblogs.nvidia.com/parallelforall/deep-learning-self-driving-cars/) The only modification was to add a new layer at the end to have a single output as it was required. This time the car did its first complete track, but there was a place in the track where it passes over the "dashed" line. I increased the epochs from 5 to 10 and collect more data.  Augmented the data by adding the same image flipped with a negative angle([model.py line 104](model.py#L104)). In addition to that, the left and right camera images where introduced with a correction factor 0.2 on the angle to help the car go back to the lane([model.py 60 - 74](model.py#L60-L74)). At the end of the process with using 10 epochs, the vehicle was able to drive autonomously around the track 1 and finally on track 2 without leaving the road.
 
 
 #### 2. Final Model Architecture
@@ -106,18 +104,18 @@ Non-trainable params: 0
 
 #### 3. Creation of the Training Set & Training Process
 
-To have more data, the following data were used:
+Addionally to the data provided by udacity (data/01_udacity), I collected and used the following data [model.py line 158](model.py#L158.:
 
 Track 1
-- One track driving forward.
-- One track driving backward.
+- Some (5-6) laps driving forward (data/02_track1_forward)
+- Three laps driving backward (data/03_track1_backward)
 
 Track 2
-- Two second track driving forward.
-- Four addionally second track driving forward.
+- Two laps driving forward. That was not enough data to stay on the whole track (data/04_track2_forward)
+- Four additionally laps driving forward (data/05_track2_forward))
 
-All these data was used for training the model with three epochs. The data was shuffled randomly. The following picture shows the training:
+All these data was used for training the model with 10 epochs. The data was shuffled randomly. The following picture shows the training:
 
 ![Model Mean-square ](images/model_mse_lost.png)
 
-After this training, the car was driving down the road all the time on the [first](video.mp4) and [second](video_second_track.mp4) track.
+After this training, the car was driving down the road all the time on the [first](video.mp4) and [second](video_track2.mp4) track.
