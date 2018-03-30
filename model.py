@@ -199,11 +199,10 @@ print(history_object.history['loss'])
 print('Validation Loss')
 print(history_object.history['val_loss'])
 
-# from keras.utils import plot_model
-# plot_model(model, to_file='model.png')
-
 plt.plot(history_object.history['loss'])
 plt.plot(history_object.history['val_loss'])
+plt.plot(loss)
+plt.plot(valid_loss)
 plt.title('model mean squared error loss')
 plt.ylabel('mse loss')
 plt.xlabel('epoch')
