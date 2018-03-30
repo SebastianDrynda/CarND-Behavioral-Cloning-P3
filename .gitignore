@@ -1,4 +1,8 @@
 **/.DS_Store
 **/.ipynb_checkpoints/**
 **/data.zip
-data/**
+data/01_udacity/**
+data/02_track1_forward/**
+data/03_track1_backward/**
+data/04_track2_forward/**
+data/05_track2_forward/**
